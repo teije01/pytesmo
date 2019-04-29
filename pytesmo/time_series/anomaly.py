@@ -93,7 +93,8 @@ def calc_climatology(Ser,
                      timespan=None,
                      fill=np.nan,
                      wraparound=False,
-                     respect_leap_years=False):
+                     respect_leap_years=False,
+                     fillna=True):
     '''
     Calculates the climatology of a data set.
 
@@ -130,6 +131,11 @@ def calc_climatology(Ser,
         the climatology
         Default: False
 
+    fillna: boolean, optional
+        If set, then the moving average used for the calculation of the
+        climatology will be filled at the nan-values (for at least 1 valid
+        observation in every `moving_avg_orig`-day window
+
     Returns
     -------
     climatology : pandas.Series
@@ -140,7 +146,7 @@ def calc_climatology(Ser,
     if timespan is not None:
         Ser = Ser.truncate(before=timespan[0], after=timespan[1])
 
-    Ser = moving_average(Ser, window_size=moving_avg_orig)
+    Ser = moving_average(Ser, window_size=moving_avg_orig, fillna=fillna)
 
     Ser = pd.DataFrame(Ser)
 
@@ -178,11 +184,11 @@ def calc_climatology(Ser,
                               clim_ser,
                               right_mirror])
 
-        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim)
+        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim, fillna=fillna)
         clim_ser = clim_ser.iloc[moving_avg_clim:-moving_avg_clim]
         clim_ser.index = index_old
     else:
-        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim)
+        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim, fillna=fillna)
 
     clim_ser = clim_ser.reindex(np.arange(366) + 1)
     clim_ser = clim_ser.fillna(fill)
