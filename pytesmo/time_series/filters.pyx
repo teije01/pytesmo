@@ -175,7 +175,7 @@ def boxcar_filter(np.ndarray[DTYPE_d, ndim=1] in_data,
                         else:
                             break
 
-            if nobs > min_obs:
+            if nobs >= min_obs:
                 filtered[i] = sum / nobs
 
     return filtered
