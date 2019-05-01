@@ -94,7 +94,10 @@ def calc_climatology(Ser,
                      fill=np.nan,
                      wraparound=False,
                      respect_leap_years=False,
-                     interpolate_leapday=False):
+                     interpolate_leapday=False,
+                     fillna=True,
+                     min_obs_orig=1,
+                     min_obs_clim=1):
     '''
     Calculates the climatology of a data set.
 
@@ -131,6 +134,22 @@ def calc_climatology(Ser,
         the climatology
         Default: False
 
+    interpolate_leapday : boolean, optional
+        If set then the leapday in the climatology is a result of interpolation of the day before and after
+        Default: False
+
+    fillna: boolean, optional
+        If set, then the moving average used for the calculation of the
+        climatology will be filled at the nan-values
+
+    min_obs_orig: int
+        Minimum observations required to give a valid output in the first
+        moving average applied on the input series
+
+    min_obs_clim: int
+        Minimum observations required to give a valid output in the second
+        moving average applied on the calculated climatology
+
     Returns
     -------
     climatology : pandas.Series
@@ -141,7 +160,7 @@ def calc_climatology(Ser,
     if timespan is not None:
         Ser = Ser.truncate(before=timespan[0], after=timespan[1])
 
-    Ser = moving_average(Ser, window_size=moving_avg_orig)
+    Ser = moving_average(Ser, window_size=moving_avg_orig, fillna=fillna, min_obs=min_obs_orig)
 
     Ser = pd.DataFrame(Ser)
 
@@ -189,11 +208,11 @@ def calc_climatology(Ser,
                               clim_ser,
                               right_mirror])
 
-        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim)
+        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim, fillna=fillna, min_obs=min_obs_clim)
         clim_ser = clim_ser.iloc[moving_avg_clim:-moving_avg_clim]
         clim_ser.index = index_old
     else:
-        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim)
+        clim_ser = moving_average(clim_ser, window_size=moving_avg_clim, fillna=fillna, min_obs=min_obs_clim)
 
     clim_ser = clim_ser.reindex(np.arange(366) + 1)
     clim_ser = clim_ser.fillna(fill)
