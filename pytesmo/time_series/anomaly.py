@@ -176,10 +176,9 @@ def calc_climatology(Ser,
 
     if respect_leap_years:
         doys = doy(month, day, year)
-        doy_leap = 366
     else:
         doys = doy(month, day)
-        doy_leap = 60
+
 
     Ser['doy'] = doys
 
@@ -192,9 +191,9 @@ def calc_climatology(Ser,
                          index=clim.index.values)
 
     if interpolate_leapday and not respect_leap_years:
-        clim_ser[doy_leap] = np.mean((clim_ser[59], clim_ser[61]))
+        clim_ser[60] = np.mean((clim_ser[59], clim_ser[61]))
     elif interpolate_leapday and respect_leap_years:
-        clim_ser[doy_leap] = np.mean((clim_ser[365], clim_ser[1]))
+        clim_ser[366] = np.mean((clim_ser[365], clim_ser[1]))
 
     if wraparound:
         index_old = clim_ser.index.copy()
